@@ -13,7 +13,7 @@ function fillClock(day, utc, continent_city) {
   time.textContent = (today.getUTCHours() < '10' ? '0' : '') + today.getUTCHours()
     + ":" + (today.getUTCMinutes() < '10' ? '0' : '') + today.getUTCMinutes()
     + ":" + (today.getUTCSeconds() < '10' ? '0' : '') + today.getUTCSeconds();
-  utcSpan.textContent = utc;
+  utcSpan.textContent = utc + " UTC";
   timeZoneContinent.textContent = continent_city.split('/')[0];
   timeZoneCity.textContent = continent_city.split('/')[1].replace('_', ' ');
 };
