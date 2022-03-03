@@ -1,35 +1,50 @@
 const url = "http://worldtimeapi.org/api/timezone/";
+let onStart = false;
 
+const time = document.getElementById('time');
 const dropdown = document.getElementById("dropdown");
+const utcSpan = document.getElementById('UTC');
+const timeZoneContinent = document.getElementById('timezone-continent');
+const timeZoneCity = document.getElementById('timezone-city');
+
+
+function fillClock(day, utc, continent_city) {
+  let today = new Date(day);
+  time.textContent = (today.getUTCHours() < '10' ? '0' : '') + today.getUTCHours()
+    + ":" + (today.getUTCMinutes() < '10' ? '0' : '') + today.getUTCMinutes()
+    + ":" + (today.getUTCSeconds() < '10' ? '0' : '') + today.getUTCSeconds();
+  utcSpan.textContent = utc;
+  timeZoneContinent.textContent = continent_city.split('/')[0];
+  timeZoneCity.textContent = continent_city.split('/')[1].replace('_', ' ');
+};
+
+const worldTimeApiFetch2 = function (url) {
+    fetch(url)
+      .then((res) => res.json())
+      .then((res) => {
+          let time = new Date(res.utc_datetime);
+          time = time.setSeconds(time.getSeconds()+ res.raw_offset);
+          fillClock(time, res.utc_offset, res.timezone);
+        }
+      )
+};
+
 dropdown.addEventListener("change", () => {
-  console.log(dropdown.value);
-  worldtimeapiFetch(url + dropdown.value);
-});
+    let input = dropdown.value;
+    if (input != '-select continent-') {
+    worldTimeApiFetch2(url + input);
+    start();
+    } else {
+      console.log('Fejl i input');
+    }
+  }
+);
 
-const worldtimeapiFetch = function (url) {
-  fetch(url)
-    .then((res) => res.json())
-    .then((res) => {
-      console.log(res);
-      /*{
-  "abbreviation": "CET",
-  "client_ip": "87.59.14.119",
-  "datetime": "2022-02-17T21:01:50.952225+01:00", <----
-  "day_of_week": 4,
-  "day_of_year": 48,
-  "dst": false,
-  "dst_from": null,
-  "dst_offset": 0,
-  "dst_until": null,
-  "raw_offset": 3600,
-  "timezone": "Europe/Copenhagen", <----
-  "unixtime": 1645128110,
-  "utc_datetime": "2022-02-17T20:01:50.952225+00:00",
-  "utc_offset": "+01:00", <----
-  "week_number": 7
-        }*/
 
-      /*TODO: lav passende attributter ud fra de markerede JSON værdier som kan manipulerer med klokken  */
-      /* Altså vælg tidszone fra drop down, og set uret.
-    });
+
+function start () {
+  if (!onStart){
+  setInterval(() => worldTimeApiFetch2(url + dropdown.value), 1000);
+  onStart = true;
+  }
 };
